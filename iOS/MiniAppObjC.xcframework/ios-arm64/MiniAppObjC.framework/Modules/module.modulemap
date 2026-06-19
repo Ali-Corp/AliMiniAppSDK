@@ -1,0 +1,5 @@
+framework module MiniAppObjC {
+  umbrella header "MiniAppObjCExceptionCatcher.h"
+  export *
+  module * { export * }
+}
