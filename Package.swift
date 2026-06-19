@@ -15,7 +15,8 @@ let package = Package(
             name: "AliMiniAppSDK",
             targets: [
                 "MiniApp",
-                "MiniAppObjC"
+                "MiniAppObjC",
+                "AliMiniAppSDKRemoteDependencies",
             ]
         ),
     ],
@@ -28,6 +29,18 @@ let package = Package(
     targets: [
         // ── Prebuilt xcframeworks ──────────────────────────────────────────
         .binaryTarget(name: "MiniApp",      path: "iOS/MiniApp.xcframework"),
-        .binaryTarget(name: "MiniAppObjC",  path: "iOS/MiniAppObjC.xcframework")
+        .binaryTarget(name: "MiniAppObjC",  path: "iOS/MiniAppObjC.xcframework"),
+
+        // ── Carrier target: wires remote deps into the product ─────────────
+        .target(
+            name: "AliMiniAppSDKRemoteDependencies",
+            dependencies: [
+                .product(name: "ZIPFoundation", package: "ZIPFoundation"),
+                .product(name: "TrustKit",      package: "TrustKit"),
+                .product(name: "SQLite",        package: "SQLite.swift"),
+                .product(name: "SwiftyJSON",    package: "SwiftyJSON"),
+            ],
+            path: "Sources/AliMiniAppSDKRemoteDependencies"
+        ),
     ]
 )
