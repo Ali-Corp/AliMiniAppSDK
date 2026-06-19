@@ -16,31 +16,31 @@ let package = Package(
             targets: [
                 "MiniApp",
                 "MiniAppObjC",
-                "AliMiniAppSDKRemoteDependencies",
+                // "AliMiniAppSDKRemoteDependencies",
             ]
         ),
     ],
-    dependencies: [
-        .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.16"),
-        .package(url: "https://github.com/datatheorem/TrustKit.git", from: "2.0.1"),
-        .package(url: "https://github.com/stephencelis/SQLite.swift.git", from: "0.15.3"),
-        .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", from: "5.0.1"),
-    ],
+    // dependencies: [
+    //     .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.16"),
+    //     .package(url: "https://github.com/datatheorem/TrustKit.git", from: "2.0.1"),
+    //     .package(url: "https://github.com/stephencelis/SQLite.swift.git", from: "0.15.3"),
+    //     .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", from: "5.0.1"),
+    // ],
     targets: [
         // ── Prebuilt xcframeworks ──────────────────────────────────────────
         .binaryTarget(name: "MiniApp",      path: "iOS/MiniApp.xcframework"),
         .binaryTarget(name: "MiniAppObjC",  path: "iOS/MiniAppObjC.xcframework"),
 
         // ── Carrier target: wires remote deps into the product ─────────────
-        .target(
-            name: "AliMiniAppSDKRemoteDependencies",
-            dependencies: [
-                .product(name: "ZIPFoundation", package: "ZIPFoundation"),
-                .product(name: "TrustKit",      package: "TrustKit"),
-                .product(name: "SQLite",        package: "SQLite.swift"),
-                .product(name: "SwiftyJSON",    package: "SwiftyJSON"),
-            ],
-            path: "Sources/AliMiniAppSDKRemoteDependencies"
-        ),
+        // .target(
+        //     name: "AliMiniAppSDKRemoteDependencies",
+        //     dependencies: [
+        //         .product(name: "ZIPFoundation", package: "ZIPFoundation"),
+        //         .product(name: "TrustKit",      package: "TrustKit"),
+        //         .product(name: "SQLite",        package: "SQLite.swift"),
+        //         .product(name: "SwiftyJSON",    package: "SwiftyJSON"),
+        //     ],
+        //     path: "Sources/AliMiniAppSDKRemoteDependencies"
+        // ),
     ]
 )
