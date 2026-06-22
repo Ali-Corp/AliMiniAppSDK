@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.homepage         = 'https://github.com/Ali-Corp/AliMiniAppSDK'
   s.license          = { type: 'MIT', file: 'LICENSE.md' }
   s.author           = { 'ALI Corp' => 'developer@ali.vn' }
-  s.source           = { git: 'https://github.com/Ali-Corp/AliMiniAppSDK, tag: s.version.to_s }
+  s.source           = { git: 'https://github.com/Ali-Corp/AliMiniAppSDK', tag: s.version.to_s }
 
   s.platform         = :ios, '15.0'
   s.swift_version    = '5.9'
