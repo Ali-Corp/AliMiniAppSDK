@@ -23,6 +23,9 @@ Pod::Spec.new do |s|
     'iOS/MiniAppObjC.xcframework',
   ]
 
+  # Include the precompiled MiniApp resource bundle from one xcframework slice.
+  s.resources = 'iOS/MiniApp.xcframework/ios-arm64/MiniApp.framework/MiniApp_MiniApp.bundle'
+
   s.static_framework = true
 
   # Remote CocoaPods dependencies — the four third-party libraries that
