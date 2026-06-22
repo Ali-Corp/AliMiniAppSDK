@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'AliMiniAppSDK'
-  s.version          = '5.10.1'
+  s.version          = '5.10.2'
   s.summary          = 'Prebuilt xcframework distribution of the ALI MiniApp SDK.'
   s.description      = <<~DESC
     AliMiniAppSDK ships MiniApp and MiniAppObjC as prebuilt xcframeworks, providing

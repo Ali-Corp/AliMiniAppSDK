@@ -14,13 +14,16 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MiniAppBridgeUtils = exports.MiniAppBridge = exports.mabKeyboardEventQueue = exports.mabCustomEventQueue = exports.mabMessageQueue = void 0;
-var secure_storage_1 = require("./types/secure-storage");
-var share_info_1 = require("./types/share-info");
+/**
+ * Bridge for communicating with Mini App
+ */
+var ga_1 = require("./modules/ga");
+var userprofile_manager_1 = require("./modules/userprofile-manager");
 // import { AccessTokenData, NativeTokenData } from './types/token-data';
 var error_types_1 = require("./types/error-types");
 var event_types_1 = require("./types/event-types");
-var ga_1 = require("./modules/ga");
-var userprofile_manager_1 = require("./modules/userprofile-manager");
+var secure_storage_1 = require("./types/secure-storage");
+var share_info_1 = require("./types/share-info");
 /** @internal */
 var mabMessageQueue = [];
 exports.mabMessageQueue = mabMessageQueue;
@@ -897,6 +900,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GoogleAnalytic = void 0;
+var event_types_1 = require("../types/event-types");
 function getQueryParams() {
     var params = {};
     if (typeof window !== 'undefined' &&
@@ -924,6 +928,11 @@ var GoogleAnalytic = /** @class */ (function () {
         this.MP_ENDPOINT = 'https://www.google-analytics.com/mp/collect';
         this.MP_DEBUG_ENDPOINT = 'https://www.google-analytics.com/debug/mp/collect';
         this.miniAppId = null;
+        // Buffer of the latest value per web vital, keyed by metric name.
+        // In a webview the standard visibilitychange/pagehide flush may not fire on
+        // dismiss/pause, so we hold the latest value and flush on miniapppause.
+        this.webVitalsBuffer = new Map();
+        this.webVitalsFlushBound = false;
         this.platform = platform;
         this.clientId = this.getOrCreateClientId();
     }
@@ -977,6 +986,38 @@ var GoogleAnalytic = /** @class */ (function () {
             engagement_time_msec: engagementTime,
         };
     };
+    // Keep only the latest value for each metric; web-vitals (with
+    // reportAllChanges) may call this several times as CLS/INP/LCP evolve.
+    GoogleAnalytic.prototype.bufferWebVital = function (metric) {
+        this.webVitalsBuffer.set(metric.name, metric);
+    };
+    // Send every buffered metric and clear the buffer so subsequent flush
+    // triggers (pagehide after miniapppause, etc.) don't re-send.
+    GoogleAnalytic.prototype.flushWebVitals = function () {
+        if (this.webVitalsBuffer.size === 0)
+            return;
+        var metrics = Array.from(this.webVitalsBuffer.values());
+        this.webVitalsBuffer.clear();
+        for (var _i = 0, metrics_1 = metrics; _i < metrics_1.length; _i++) {
+            var metric = metrics_1[_i];
+            this.reportWebVital(metric);
+        }
+    };
+    // Flush on the lifecycle signals available in a webview. miniapppause is the
+    // reliable one when the host dismisses/pauses the mini-app; visibilitychange
+    // and pagehide are kept as a fallback for normal browser contexts.
+    GoogleAnalytic.prototype.registerWebVitalsFlush = function () {
+        if (this.webVitalsFlushBound || typeof window === 'undefined')
+            return;
+        this.webVitalsFlushBound = true;
+        var flush = this.flushWebVitals.bind(this);
+        window.addEventListener(event_types_1.MiniAppEvents.PAUSE, flush);
+        window.addEventListener('pagehide', flush);
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'hidden')
+                flush();
+        });
+    };
     GoogleAnalytic.prototype.reportWebVital = function (metric) {
         return __awaiter(this, void 0, void 0, function () {
             var success;
@@ -986,14 +1027,16 @@ var GoogleAnalytic = /** @class */ (function () {
                         if (!this.gaId)
                             return [2 /*return*/];
                         return [4 /*yield*/, this.sendMPEvent(metric.name, {
-                                value: metric.delta,
+                                value: metric.value,
+                                metric_value: metric.value,
+                                metric_delta: metric.delta,
                                 event_category: 'web_vitals',
                                 event_label: metric.id,
                             })];
                     case 1:
                         success = _a.sent();
                         if (success) {
-                            console.log("Web-vital ".concat(metric.name, " reported via MP to ").concat(this.gaId));
+                            console.log("Web-vital ".concat(metric.name, " reported via MP to ").concat(this.gaId, " with value ").concat(metric.value, ", delta ").concat(metric.delta));
                         }
                         return [2 /*return*/];
                 }
@@ -1015,23 +1058,23 @@ var GoogleAnalytic = /** @class */ (function () {
             console.log('🚀 ~ GoogleAnalytic ~ using MP API Secret:', this.mpApiSecret ? 'SET' : 'NOT SET');
             if (queryParams.eruda === '1') {
                 var script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/eruda';
+                script.src = 'https://unpkg.com/vconsole@latest/dist/vconsole.min.js';
                 script.onload = function () {
-                    if (window.eruda) {
-                        window.eruda.init({
-                            tool: ['console', 'elements', 'network', 'resources', 'info'],
-                        });
+                    if (window.VConsole) {
+                        new window.VConsole();
                     }
                 };
                 document.body.appendChild(script);
             }
+            this.registerWebVitalsFlush();
             Promise.resolve().then(function () { return __importStar(require('web-vitals')); }).then(function (_a) {
-                var onCLS = _a.onCLS, onINP = _a.onINP, onFCP = _a.onFCP, onLCP = _a.onLCP, onTTFB = _a.onTTFB;
-                onCLS(_this.reportWebVital.bind(_this));
-                onINP(_this.reportWebVital.bind(_this));
-                onFCP(_this.reportWebVital.bind(_this));
-                onLCP(_this.reportWebVital.bind(_this));
-                onTTFB(_this.reportWebVital.bind(_this));
+                var onCLS = _a.onCLS, onINP = _a.onINP, onFCP = _a.onFCP, onLCP = _a.onLCP;
+                var buffer = _this.bufferWebVital.bind(_this);
+                var opts = { reportAllChanges: true };
+                onCLS(buffer, opts);
+                onINP(buffer, opts);
+                onFCP(buffer, opts);
+                onLCP(buffer, opts);
             });
         }
         catch (error) {
@@ -1815,7 +1858,7 @@ var GoogleAnalytic = /** @class */ (function () {
 }());
 exports.GoogleAnalytic = GoogleAnalytic;
 
-},{"web-vitals":13}],4:[function(require,module,exports){
+},{"../types/event-types":9,"web-vitals":13}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserProfileManager = void 0;
@@ -1998,11 +2041,6 @@ Object.defineProperty(exports, "DownloadFailedError", { enumerable: true, get: f
 Object.defineProperty(exports, "DownloadHttpError", { enumerable: true, get: function () { return download_file_errors_1.DownloadHttpError; } });
 Object.defineProperty(exports, "InvalidUrlError", { enumerable: true, get: function () { return download_file_errors_1.InvalidUrlError; } });
 Object.defineProperty(exports, "SaveFailureError", { enumerable: true, get: function () { return download_file_errors_1.SaveFailureError; } });
-var secure_storage_errors_1 = require("./secure-storage-errors");
-Object.defineProperty(exports, "SecureStorageFullError", { enumerable: true, get: function () { return secure_storage_errors_1.SecureStorageFullError; } });
-Object.defineProperty(exports, "SecureStorageBusyError", { enumerable: true, get: function () { return secure_storage_errors_1.SecureStorageBusyError; } });
-Object.defineProperty(exports, "SecureStorageUnavailableError", { enumerable: true, get: function () { return secure_storage_errors_1.SecureStorageUnavailableError; } });
-Object.defineProperty(exports, "SecureStorageIOError", { enumerable: true, get: function () { return secure_storage_errors_1.SecureStorageIOError; } });
 // import {
 //   PurchaseFailedError,
 //   ConsumeFailedError,
@@ -2013,6 +2051,11 @@ Object.defineProperty(exports, "SecureStorageIOError", { enumerable: true, get: 
 // } from './in-app-purchase-errors';
 var mini_app_error_1 = require("./mini-app-error");
 Object.defineProperty(exports, "MiniAppError", { enumerable: true, get: function () { return mini_app_error_1.MiniAppError; } });
+var secure_storage_errors_1 = require("./secure-storage-errors");
+Object.defineProperty(exports, "SecureStorageBusyError", { enumerable: true, get: function () { return secure_storage_errors_1.SecureStorageBusyError; } });
+Object.defineProperty(exports, "SecureStorageFullError", { enumerable: true, get: function () { return secure_storage_errors_1.SecureStorageFullError; } });
+Object.defineProperty(exports, "SecureStorageIOError", { enumerable: true, get: function () { return secure_storage_errors_1.SecureStorageIOError; } });
+Object.defineProperty(exports, "SecureStorageUnavailableError", { enumerable: true, get: function () { return secure_storage_errors_1.SecureStorageUnavailableError; } });
 function parseMiniAppError(jsonString) {
     try {
         var json = JSON.parse(jsonString);
@@ -2316,6 +2359,6 @@ function validateShareInfo(info) {
 exports.validateShareInfo = validateShareInfo;
 
 },{}],13:[function(require,module,exports){
-!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self).webVitals={})}(this,function(e){"use strict";let t=-1;const n=e=>{addEventListener("pageshow",n=>{n.persisted&&(t=n.timeStamp,e(n))},!0)},i=(e,t,n,i)=>{let o,s;return r=>{t.value>=0&&(r||i)&&(s=t.value-(o??0),(s||void 0===o)&&(o=t.value,t.delta=s,t.rating=((e,t)=>e>t[1]?"poor":e>t[0]?"needs-improvement":"good")(t.value,n),e(t)))}},o=e=>{requestAnimationFrame(()=>requestAnimationFrame(e))},s=()=>{const e=performance.getEntriesByType("navigation")[0];if(e&&e.responseStart>0&&e.responseStart<performance.now())return e},r=()=>s()?.activationStart??0,c=(e,n=-1)=>{const i=s();let o="navigate";t>=0?o="back-forward-cache":i&&(document.prerendering||r()>0?o="prerender":document.wasDiscarded?o="restore":i.type&&(o=i.type.replace(/_/g,"-")));return{name:e,value:n,rating:"good",delta:0,entries:[],id:`v5-${Date.now()}-${Math.floor(8999999999999*Math.random())+1e12}`,navigationType:o}},a=new WeakMap;function d(e,t){return a.get(e)||a.set(e,new t),a.get(e)}class f{t;i=0;o=[];h(e){if(e.hadRecentInput)return;const t=this.o[0],n=this.o.at(-1);this.i&&t&&n&&e.startTime-n.startTime<1e3&&e.startTime-t.startTime<5e3?(this.i+=e.value,this.o.push(e)):(this.i=e.value,this.o=[e]),this.t?.(e)}}const h=(e,t,n={})=>{try{if(PerformanceObserver.supportedEntryTypes.includes(e)){const i=new PerformanceObserver(e=>{queueMicrotask(()=>{t(e.getEntries())})});return i.observe({type:e,buffered:!0,...n}),i}}catch{}},l=e=>{let t=!1;return()=>{t||(e(),t=!0)}};let u=-1;const p=new Set,m=()=>"hidden"!==document.visibilityState||document.prerendering?1/0:0,g=e=>{if("hidden"===document.visibilityState){if("visibilitychange"===e.type)for(const e of p)e();isFinite(u)||(u="visibilitychange"===e.type?e.timeStamp:0,removeEventListener("prerenderingchange",g,!0))}},v=()=>{if(u<0){const e=r(),t=document.prerendering?void 0:globalThis.performance.getEntriesByType("visibility-state").find(t=>"hidden"===t.name&&t.startTime>=e)?.startTime;u=t??m(),addEventListener("visibilitychange",g,!0),addEventListener("prerenderingchange",g,!0),n(()=>{setTimeout(()=>{u=m()})})}return{get firstHiddenTime(){return u},onHidden(e){p.add(e)}}},y=e=>{document.prerendering?addEventListener("prerenderingchange",e,!0):e()},T=[1800,3e3],b=(e,t={})=>{y(()=>{const s=v();let a,d=c("FCP");const f=h("paint",e=>{for(const t of e)"first-contentful-paint"===t.name&&(f.disconnect(),t.startTime<s.firstHiddenTime&&(d.value=Math.max(t.startTime-r(),0),d.entries.push(t),a(!0)))});f&&(a=i(e,d,T,t.reportAllChanges),n(n=>{d=c("FCP"),a=i(e,d,T,t.reportAllChanges),o(()=>{d.value=performance.now()-n.timeStamp,a(!0)})}))})},E=[.1,.25];let L=0,P=1/0,_=0;const M=e=>{for(const t of e)t.interactionId&&(P=Math.min(P,t.interactionId),_=Math.max(_,t.interactionId),L=_?(_-P)/7+1:0)};let w;const C=()=>w?L:performance.interactionCount??0,I=()=>{"interactionCount"in performance||w||(w=h("event",M,{durationThreshold:0}))};let F=0;class k{l=[];u=new Map;p;m;v(){F=C(),this.l.length=0,this.u.clear()}T(){const e=Math.min(this.l.length-1,Math.floor((C()-F)/50));return this.l[e]}h(e){if(this.p?.(e),!e.interactionId&&"first-input"!==e.entryType)return;const t=this.l.at(-1);let n=this.u.get(e.interactionId);if(n||this.l.length<10||e.duration>t.L){if(n?e.duration>n.L?(n.entries=[e],n.L=e.duration):e.duration===n.L&&e.startTime===n.entries[0].startTime&&n.entries.push(e):(n={id:e.interactionId,entries:[e],L:e.duration},this.u.set(n.id,n),this.l.push(n)),this.l.sort((e,t)=>t.L-e.L),this.l.length>10){const e=this.l.splice(10);for(const t of e)this.u.delete(t.id)}this.m?.(n)}}}const x=e=>{const t=globalThis.requestIdleCallback||setTimeout,n=globalThis.cancelIdleCallback||clearTimeout;if("hidden"===document.visibilityState)e();else{const i=l(e);let o=-1;const s=()=>{n(o),i()};addEventListener("visibilitychange",s,{once:!0,capture:!0}),o=t(()=>{removeEventListener("visibilitychange",s,{capture:!0}),i()})}},A=[200,500];class B{p;h(e){this.p?.(e)}}const S=[2500,4e3],q=[800,1800],N=e=>{document.prerendering?y(()=>N(e)):"complete"!==document.readyState?addEventListener("load",()=>N(e),!0):setTimeout(e)};e.CLSThresholds=E,e.FCPThresholds=T,e.INPThresholds=A,e.LCPThresholds=S,e.TTFBThresholds=q,e.onCLS=(e,t={})=>{const s=v();b(l(()=>{let r,a=c("CLS",0);const l=d(t,f),u=e=>{for(const t of e)l.h(t);l.i>a.value&&(a.value=l.i,a.entries=l.o,r())},p=h("layout-shift",u);p&&(r=i(e,a,E,t.reportAllChanges),s.onHidden(()=>{u(p.takeRecords()),r(!0)}),n(()=>{l.i=0,a=c("CLS",0),r=i(e,a,E,t.reportAllChanges),o(r)}),setTimeout(r))}))},e.onFCP=b,e.onINP=(e,t={})=>{if(!globalThis.PerformanceEventTiming||!("interactionId"in PerformanceEventTiming.prototype))return;const o=v();y(()=>{I();let s,r=c("INP");const a=d(t,k),f=e=>{x(()=>{for(const t of e)a.h(t);const t=a.T();t&&t.L!==r.value&&(r.value=t.L,r.entries=t.entries,s())})},l=h("event",f,{durationThreshold:t.durationThreshold??40});s=i(e,r,A,t.reportAllChanges),l&&(l.observe({type:"first-input",buffered:!0}),o.onHidden(()=>{f(l.takeRecords()),s(!0)}),n(()=>{a.v(),r=c("INP"),s=i(e,r,A,t.reportAllChanges)}))})},e.onLCP=(e,t={})=>{y(()=>{const s=v();let a,f=c("LCP");const u=d(t,B),p=e=>{t.reportAllChanges||(e=e.slice(-1));for(const t of e)u.h(t),t.startTime<s.firstHiddenTime&&(f.value=Math.max(t.startTime-r(),0),f.entries=[t],a())},m=h("largest-contentful-paint",p);if(m){a=i(e,f,S,t.reportAllChanges);const s=l(()=>{p(m.takeRecords()),m.disconnect(),a(!0)}),r=e=>{e.isTrusted&&(x(s),removeEventListener(e.type,r,{capture:!0}))};for(const e of["keydown","click","visibilitychange"])addEventListener(e,r,{capture:!0});n(n=>{f=c("LCP"),a=i(e,f,S,t.reportAllChanges),o(()=>{f.value=performance.now()-n.timeStamp,a(!0)})})}})},e.onTTFB=(e,t={})=>{let o=c("TTFB"),a=i(e,o,q,t.reportAllChanges);N(()=>{const d=s();d&&(o.value=Math.max(d.responseStart-r(),0),o.entries=[d],a(!0),n(()=>{o=c("TTFB",0),a=i(e,o,q,t.reportAllChanges),a(!0)}))})}});
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self).webVitals={})}(this,function(e){"use strict";let t=-1;const n=e=>{addEventListener("pageshow",n=>{n.persisted&&(t=n.timeStamp,e(n))},!0)},i=(e,t,n,i)=>{let o,s;return r=>{t.value>=0&&(r||i)&&(s=t.value-(o??0),(s||void 0===o)&&(o=t.value,t.delta=s,t.rating=((e,t)=>e>t[1]?"poor":e>t[0]?"needs-improvement":"good")(t.value,n),e(t)))}},o=e=>{requestAnimationFrame(()=>requestAnimationFrame(e))},s=()=>{const e=performance.getEntriesByType("navigation")[0];if(e&&e.responseStart>0&&e.responseStart<performance.now())return e},r=()=>s()?.activationStart??0,c=(e,n=-1)=>{const i=s();let o="navigate";t>=0?o="back-forward-cache":i&&(document.prerendering||r()>0?o="prerender":document.wasDiscarded?o="restore":i.type&&(o=i.type.replace(/_/g,"-")));return{name:e,value:n,rating:"good",delta:0,entries:[],id:`v5-${Date.now()}-${Math.floor(8999999999999*Math.random())+1e12}`,navigationType:o}},a=new WeakMap;function d(e,t){let n=a.get(t);return n||(n=new WeakMap,a.set(t,n)),n.get(e)||n.set(e,new t),n.get(e)}class f{t;i=0;o=[];h(e){if(e.hadRecentInput)return;const t=this.o[0],n=this.o.at(-1);this.i&&t&&n&&e.startTime-n.startTime<1e3&&e.startTime-t.startTime<5e3?(this.i+=e.value,this.o.push(e)):(this.i=e.value,this.o=[e]),this.t?.(e)}}const h=(e,t,n={})=>{try{if(PerformanceObserver.supportedEntryTypes.includes(e)){const i=new PerformanceObserver(e=>{queueMicrotask(()=>{t(e.getEntries())})});return i.observe({type:e,buffered:!0,...n}),i}}catch{}},l=e=>{let t=!1;return()=>{t||(e(),t=!0)}};let u=-1;const p=new Set,m=()=>"hidden"!==document.visibilityState||document.prerendering?1/0:0,g=e=>{if("hidden"===document.visibilityState){if("visibilitychange"===e.type)for(const e of p)e();isFinite(u)||(u="visibilitychange"===e.type?e.timeStamp:0,removeEventListener("prerenderingchange",g,!0))}},v=()=>{if(u<0){const e=r(),t=document.prerendering?void 0:globalThis.performance.getEntriesByType("visibility-state").find(t=>"hidden"===t.name&&t.startTime>=e)?.startTime;u=t??m(),addEventListener("visibilitychange",g,!0),addEventListener("prerenderingchange",g,!0),n(()=>{setTimeout(()=>{u=m()})})}return{get firstHiddenTime(){return u},onHidden(e){p.add(e)}}},y=e=>{document.prerendering?addEventListener("prerenderingchange",e,!0):e()},T=[1800,3e3],b=(e,t={})=>{y(()=>{const s=v();let a,d=c("FCP");const f=h("paint",e=>{for(const t of e)"first-contentful-paint"===t.name&&(f.disconnect(),t.startTime<s.firstHiddenTime&&(d.value=Math.max(t.startTime-r(),0),d.entries.push(t),a(!0)))});f&&(a=i(e,d,T,t.reportAllChanges),n(n=>{d=c("FCP"),a=i(e,d,T,t.reportAllChanges),o(()=>{d.value=performance.now()-n.timeStamp,a(!0)})}))})},E=[.1,.25];let L=0,P=1/0,_=0;const M=e=>{for(const t of e)t.interactionId&&(P=Math.min(P,t.interactionId),_=Math.max(_,t.interactionId),L=_?(_-P)/7+1:0)};let w;const C=()=>w?L:performance.interactionCount??0,I=()=>{"interactionCount"in performance||w||(w=h("event",M,{durationThreshold:0}))};let F=0;class k{l=[];u=new Map;p;m;v(){F=C(),this.l.length=0,this.u.clear()}T(){const e=Math.min(this.l.length-1,Math.floor((C()-F)/50));return this.l[e]}h(e){if(this.p?.(e),!e.interactionId&&"first-input"!==e.entryType)return;const t=this.l.at(-1);let n=this.u.get(e.interactionId);if(n||this.l.length<10||e.duration>t.L){if(n?e.duration>n.L?(n.entries=[e],n.L=e.duration):e.duration===n.L&&e.startTime===n.entries[0].startTime&&n.entries.push(e):(n={id:e.interactionId,entries:[e],L:e.duration},this.u.set(n.id,n),this.l.push(n)),this.l.sort((e,t)=>t.L-e.L),this.l.length>10){const e=this.l.splice(10);for(const t of e)this.u.delete(t.id)}this.m?.(n)}}}const x=e=>{const t=globalThis.requestIdleCallback||setTimeout,n=globalThis.cancelIdleCallback||clearTimeout;if("hidden"===document.visibilityState)e();else{const i=l(e);let o=-1;const s=()=>{n(o),i()};addEventListener("visibilitychange",s,{once:!0,capture:!0}),o=t(()=>{removeEventListener("visibilitychange",s,{capture:!0}),i()})}},A=[200,500];class B{p;h(e){this.p?.(e)}}const S=[2500,4e3],q=[800,1800],N=e=>{document.prerendering?y(()=>N(e)):"complete"!==document.readyState?addEventListener("load",()=>N(e),!0):setTimeout(e)};e.CLSThresholds=E,e.FCPThresholds=T,e.INPThresholds=A,e.LCPThresholds=S,e.TTFBThresholds=q,e.onCLS=(e,t={})=>{const s=v();b(l(()=>{let r,a=c("CLS",0);const l=d(t,f),u=e=>{for(const t of e)l.h(t);l.i>a.value&&(a.value=l.i,a.entries=l.o,r())},p=h("layout-shift",u);p&&(r=i(e,a,E,t.reportAllChanges),s.onHidden(()=>{u(p.takeRecords()),r(!0)}),n(()=>{l.i=0,a=c("CLS",0),r=i(e,a,E,t.reportAllChanges),o(r)}),setTimeout(r))}))},e.onFCP=b,e.onINP=(e,t={})=>{if(!globalThis.PerformanceEventTiming||!("interactionId"in PerformanceEventTiming.prototype))return;const o=v();y(()=>{I();let s,r=c("INP");const a=d(t,k),f=e=>{x(()=>{for(const t of e)a.h(t);const t=a.T();t&&t.L!==r.value&&(r.value=t.L,r.entries=t.entries,s())})},l=h("event",f,{durationThreshold:t.durationThreshold??40});s=i(e,r,A,t.reportAllChanges),l&&(l.observe({type:"first-input",buffered:!0}),o.onHidden(()=>{f(l.takeRecords()),s(!0)}),n(()=>{a.v(),r=c("INP"),s=i(e,r,A,t.reportAllChanges)}))})},e.onLCP=(e,t={})=>{y(()=>{const s=v();let a,f=c("LCP");const u=d(t,B),p=e=>{t.reportAllChanges||(e=e.slice(-1));for(const t of e)u.h(t),t.startTime<s.firstHiddenTime&&(f.value=Math.max(t.startTime-r(),0),f.entries=[t],a())},m=h("largest-contentful-paint",p);if(m){a=i(e,f,S,t.reportAllChanges);const s=l(()=>{p(m.takeRecords()),m.disconnect(),a(!0)}),r=e=>{e.isTrusted&&(x(s),removeEventListener(e.type,r,{capture:!0}))};for(const e of["keydown","click","visibilitychange"])addEventListener(e,r,{capture:!0});n(n=>{f=c("LCP"),a=i(e,f,S,t.reportAllChanges),o(()=>{f.value=performance.now()-n.timeStamp,a(!0)})})}})},e.onTTFB=(e,t={})=>{let o=c("TTFB"),a=i(e,o,q,t.reportAllChanges);N(()=>{const d=s();d&&(o.value=Math.max(d.responseStart-r(),0),o.entries=[d],a(!0),n(()=>{o=c("TTFB",0),a=i(e,o,q,t.reportAllChanges),a(!0)}))})}});
 
 },{}]},{},[2]);
