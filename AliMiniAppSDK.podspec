@@ -9,10 +9,10 @@ Pod::Spec.new do |s|
     dependencies are declared and resolved by the package manager.
   DESC
 
-  s.homepage         = 'https://gitlab.ali.vn/super-app/ios-miniapp-sdk'
+  s.homepage         = 'https://github.com/Ali-Corp/AliMiniAppSDK'
   s.license          = { type: 'MIT', file: 'LICENSE.md' }
-  s.author           = { 'ALI Corp' => 'dev@ali.vn' }
-  s.source           = { git: 'https://gitlab.ali.vn/super-app/ali-miniapp-sdk.git', tag: s.version.to_s }
+  s.author           = { 'ALI Corp' => 'developer@ali.vn' }
+  s.source           = { git: 'https://github.com/Ali-Corp/AliMiniAppSDK, tag: s.version.to_s }
 
   s.platform         = :ios, '15.0'
   s.swift_version    = '5.9'
