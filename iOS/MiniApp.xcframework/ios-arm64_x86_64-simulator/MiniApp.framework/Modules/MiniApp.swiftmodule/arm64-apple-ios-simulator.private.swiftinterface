@@ -1,0 +1,1263 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.3.3 effective-5.10 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)
+// swift-module-flags: -target arm64-apple-ios15.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -O -enable-experimental-feature DebugDescriptionMacro -module-name MiniApp
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface -formal-cxx-interoperability-mode=off -interface-compiler-version 6.3.3
+import AVFoundation
+import Combine
+import CommonCrypto
+import CoreLocation
+import CryptoKit
+import DeveloperToolsSupport
+import Foundation
+import Foundation/*.Bundle*/
+import Foundation/*.ProcessInfo*/
+import Foundation/*.URL*/
+import LocalAuthentication
+import MiniAppObjC
+import SQLite
+import SQLite3
+import Swift
+import SwiftUI
+import SwiftyJSON
+import TrustKit
+import UIKit
+import UniformTypeIdentifiers
+import WebKit
+import ZIPFoundation
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+import _WebKit_SwiftUI
+import os
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers public class MiniAppAdDisplayer : ObjectiveC.NSObject, MiniApp.MiniAppAdDisplayDelegate {
+  public init(with delegate: any MiniApp.MiniAppAdDisplayDelegate)
+  public func loadInterstitial(for adId: Swift.String, onLoaded: @escaping (Swift.Result<Swift.Void, any Swift.Error>) -> Swift.Void)
+  public func showInterstitial(for adId: Swift.String, onClosed: @escaping (Swift.Result<Swift.Void, any Swift.Error>) -> Swift.Void)
+  public func loadRewarded(for adId: Swift.String, onLoaded: @escaping (Swift.Result<Swift.Void, any Swift.Error>) -> Swift.Void)
+  public func showRewarded(for adId: Swift.String, onClosed: @escaping (Swift.Result<MiniApp.MiniAppReward, any Swift.Error>) -> Swift.Void)
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor @preconcurrency public class MiniAppExternalWebViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor @preconcurrency public class func presentModally(url: Foundation.URL, externalLinkResponseHandler: MiniApp.MiniAppNavigationResponseHandler?, customMiniAppURL: Foundation.URL? = nil, onCloseHandler: MiniApp.MiniAppNavigationResponseHandler?)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func loadView()
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewDidLoad()
+  @objc deinit
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor @preconcurrency @objc required dynamic public init?(coder: Foundation.NSCoder)
+}
+extension MiniApp.MiniAppExternalWebViewController : WebKit.WKNavigationDelegate {
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func webView(_ webView: WebKit.WKWebView, didFinish navigation: WebKit.WKNavigation!)
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func webView(_ webView: WebKit.WKWebView, didFail navigation: WebKit.WKNavigation!, withError error: any Swift.Error)
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func webView(_ webView: WebKit.WKWebView, decidePolicyFor navigationAction: WebKit.WKNavigationAction, decisionHandler: @escaping (WebKit.WKNavigationActionPolicy) -> Swift.Void)
+}
+public class MiniAppNavigationConfig {
+  public init(navigationBarVisibility: MiniApp.MiniAppNavigationVisibility? = .never, navigationDelegate: (any MiniApp.MiniAppNavigationDelegate)? = nil, customNavigationView: (any UIKit.UIView & MiniApp.MiniAppNavigationDelegate)? = nil)
+  @objc deinit
+}
+public typealias MiniAppNavigationResponseHandler = (Foundation.URL) -> Swift.Void
+public protocol MiniAppNavigationDelegate : AnyObject {
+  func miniAppNavigation(shouldOpen url: Foundation.URL, with responseHandler: @escaping MiniApp.MiniAppNavigationResponseHandler, onClose closeHandler: MiniApp.MiniAppNavigationResponseHandler?)
+  func miniAppNavigation(shouldOpen url: Foundation.URL, with responseHandler: @escaping MiniApp.MiniAppNavigationResponseHandler, onClose closeHandler: MiniApp.MiniAppNavigationResponseHandler?, customMiniAppURL: Foundation.URL)
+  func miniAppNavigation(canUse actions: [MiniApp.MiniAppNavigationAction])
+  func miniAppNavigation(delegate: any MiniApp.MiniAppNavigationBarDelegate)
+  func miniAppNavigationCanGo(back: Swift.Bool, forward: Swift.Bool)
+}
+extension MiniApp.MiniAppNavigationDelegate {
+  public func miniAppNavigation(shouldOpen url: Foundation.URL, with responseHandler: @escaping MiniApp.MiniAppNavigationResponseHandler, onClose closeHandler: MiniApp.MiniAppNavigationResponseHandler?)
+  public func miniAppNavigation(shouldOpen url: Foundation.URL, with responseHandler: @escaping MiniApp.MiniAppNavigationResponseHandler, onClose closeHandler: MiniApp.MiniAppNavigationResponseHandler?, customMiniAppURL: Foundation.URL)
+  public func miniAppNavigation(canUse actions: [MiniApp.MiniAppNavigationAction])
+  public func miniAppNavigation(delegate: any MiniApp.MiniAppNavigationBarDelegate)
+  public func miniAppNavigationCanGo(back: Swift.Bool, forward: Swift.Bool)
+  public func checkWebsiteSecurity(url: Foundation.URL, with responseHandler: @escaping (Swift.Bool) -> Swift.Void)
+}
+public protocol MiniAppNavigationBarDelegate : AnyObject {
+  @discardableResult
+  func miniAppNavigationBar(didTriggerAction action: MiniApp.MiniAppNavigationAction) -> Swift.Bool
+  func miniAppShouldClose() -> MiniApp.CloseAlertInfo?
+}
+public enum MiniAppNavigationAction {
+  case back, forward
+  public static func == (a: MiniApp.MiniAppNavigationAction, b: MiniApp.MiniAppNavigationAction) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum MiniAppNavigationVisibility {
+  case never, auto, always
+  public static func == (a: MiniApp.MiniAppNavigationVisibility, b: MiniApp.MiniAppNavigationVisibility) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension Foundation.Bundle {
+  public class var miniAppSDKBundle: Foundation.Bundle {
+    get
+  }
+}
+extension Foundation.NotificationCenter {
+  public func sendCustomEvent(_ event: MiniApp.MiniAppEvent.Event)
+  public func sendKeyboardEvent(_ event: MiniApp.MiniAppKeyboardEvent.Event)
+}
+extension UIKit.UIApplication {
+  @_Concurrency.MainActor @preconcurrency public func keyWindow() -> UIKit.UIWindow?
+}
+extension UIKit.UIViewController {
+  @_Concurrency.MainActor @preconcurrency public class func topViewController(controller: UIKit.UIViewController? = UIApplication.shared.keyWindow()?.topController()) -> UIKit.UIViewController?
+}
+extension UIKit.UIWindow {
+  @_Concurrency.MainActor @preconcurrency public func topController() -> UIKit.UIViewController?
+}
+public struct Mauid : Swift.Codable {
+  public var mauid: Swift.String
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public typealias PermissionCompletionHandler = (Swift.Result<MiniApp.MASDKPermissionResponse, MiniApp.MASDKPermissionError>) -> Swift.Void
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers public class LocationManager : ObjectiveC.NSObject, Foundation.ObservableObject, CoreLocation.CLLocationManagerDelegate {
+  @objc public func locationManager(_ manager: CoreLocation.CLLocationManager, didUpdateLocations locations: [_LocationEssentials.CLLocation])
+  @objc public func locationManager(_ manager: CoreLocation.CLLocationManager, didChangeAuthorization status: CoreLocation.CLAuthorizationStatus)
+  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
+  @objc deinit
+}
+public protocol ChatMessageBridgeDelegate : AnyObject {
+  func sendMessageToContact(_ message: MiniApp.MessageToContact, completionHandler: @escaping (Swift.Result<Swift.String?, MiniApp.MASDKError>) -> Swift.Void)
+  func sendMessageToContactId(_ contactId: Swift.String, message: MiniApp.MessageToContact, completionHandler: @escaping (Swift.Result<Swift.String?, MiniApp.MASDKError>) -> Swift.Void)
+  func sendMessageToMultipleContacts(_ message: MiniApp.MessageToContact, completionHandler: @escaping (Swift.Result<[Swift.String]?, MiniApp.MASDKError>) -> Swift.Void)
+}
+public class MessageToContact : Swift.Codable, Swift.Hashable, Swift.Equatable {
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (lhs: MiniApp.MessageToContact, rhs: MiniApp.MessageToContact) -> Swift.Bool
+  final public let image: Swift.String
+  final public let text: Swift.String
+  final public let caption: Swift.String
+  final public let action: Swift.String
+  final public let bannerMessage: Swift.String?
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+  public var hashValue: Swift.Int {
+    get
+  }
+  required public init(from decoder: any Swift.Decoder) throws
+}
+public enum MiniAppDevicePermissionType : Swift.String {
+  case location
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MiniAppCustomPermissionType : Swift.String, Swift.Codable, Swift.CaseIterable {
+  case userInfo
+  case deviceLocation
+  case fileDownload
+  public var title: Swift.String {
+    get
+  }
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [MiniApp.MiniAppCustomPermissionType]
+  public typealias RawValue = Swift.String
+  nonisolated public static var allCases: [MiniApp.MiniAppCustomPermissionType] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MiniAppCustomPermissionGrantedStatus : Swift.String, Swift.Codable {
+  case allowed
+  case denied
+  case permissionNotAvailable
+  public var boolValue: Swift.Bool {
+    get
+  }
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MiniAppEvent : Swift.String {
+  case externalWebViewClosed
+  case pause
+  case resume
+  case secureStorageReady
+  case secureStorageError
+  case miniappReceiveJsonString
+  case miniappScreenDimensionChange
+  case requestGoBack
+  public static let notificationName: Foundation.Notification.Name
+  public struct Event {
+    public init(miniAppId: Swift.String, miniAppVersion: Swift.String, type: MiniApp.MiniAppEvent, comment: Swift.String)
+  }
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MiniAppKeyboardEvent : Swift.String {
+  case keyboardShown
+  case keyboardHidden
+  public static let notificationName: Foundation.Notification.Name
+  public struct Event {
+    public init(type: MiniApp.MiniAppKeyboardEvent, comment: Swift.String, navigationBarHeight: CoreFoundation.CGFloat? = nil, keyboardHeight: CoreFoundation.CGFloat? = nil, screenHeight: CoreFoundation.CGFloat? = nil)
+  }
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers public class MASDKCustomPermissionModel : Swift.Codable, Swift.Hashable, Swift.Comparable {
+  public static func < (lhs: MiniApp.MASDKCustomPermissionModel, rhs: MiniApp.MASDKCustomPermissionModel) -> Swift.Bool
+  public static func == (lhs: MiniApp.MASDKCustomPermissionModel, rhs: MiniApp.MASDKCustomPermissionModel) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var permissionName: MiniApp.MiniAppCustomPermissionType
+  public var isPermissionGranted: MiniApp.MiniAppCustomPermissionGrantedStatus
+  public var permissionDescription: Swift.String?
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+  public var hashValue: Swift.Int {
+    get
+  }
+  required public init(from decoder: any Swift.Decoder) throws
+}
+public protocol VoIPMessageBridgeDelegate : AnyObject {
+  func startVoIPCall(voIPProps: MiniApp.VoIPProps, completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MASDKError>) -> Swift.Void)
+}
+public struct VoIPConfig : Swift.Codable {
+  public let username: Swift.String
+  public let credential: Swift.String
+  public let secret: Swift.String
+  public init(username: Swift.String, credential: Swift.String, secret: Swift.String)
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct VoIPData : Swift.Codable {
+  public let callerMauid: Swift.String
+  public let callerId: Swift.String
+  public let callerAvatar: Swift.String
+  public let callerName: Swift.String?
+  public let calleeId: Swift.String
+  public let calleeAvatar: Swift.String
+  public let calleeName: Swift.String
+  public let type: Swift.Int
+  public let metadata: [Swift.String : Any]
+  public init(callerMauid: Swift.String, callerId: Swift.String, callerAvatar: Swift.String, callerName: Swift.String?, calleeId: Swift.String, calleeAvatar: Swift.String, calleeName: Swift.String, type: Swift.Int, metadata: [Swift.String : Any])
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+public struct VoIPProps : Swift.Codable {
+  public let config: MiniApp.VoIPConfig
+  public let data: MiniApp.VoIPData
+  public init(config: MiniApp.VoIPConfig, data: MiniApp.VoIPData)
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public enum MASDKError : Swift.Error {
+  case serverError(code: Swift.Int, message: Swift.String)
+  case invalidURLError
+  case invalidAppId
+  case invalidVersionId
+  case invalidResponseData
+  case downloadingFailed
+  case noPublishedVersion
+  case miniAppNotFound
+  case metaDataFailure
+  case invalidContactId
+  case failedToConformToProtocol
+  case invalidSignature
+  case miniAppCorrupted
+  case unknownError(domain: Swift.String, code: Swift.Int, description: Swift.String)
+  case miniAppTooManyRequestsError
+  public func isDeviceOfflineDownloadError() -> Swift.Bool
+  public func isQPSLimitError() -> Swift.Bool
+}
+extension MiniApp.MASDKError : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
+  public var code: Swift.Int {
+    get
+  }
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers public class MiniApp : ObjectiveC.NSObject {
+  public static let version: Swift.String
+  public static var MAOrientationLock: UIKit.UIInterfaceOrientationMask
+  public static func configure()
+  public class func shared(with settings: MiniApp.MiniAppSdkConfig? = nil, navigationSettings: MiniApp.MiniAppNavigationConfig? = nil) -> MiniApp.MiniApp
+  public func list(completionHandler: @escaping (Swift.Result<[MiniApp.MiniAppInfo], MiniApp.MASDKError>) -> Swift.Void)
+  public func info(miniAppId: Swift.String, miniAppVersion: Swift.String? = nil, hostVersion: Swift.String? = nil, languageCode: Swift.String? = nil, completionHandler: @escaping (Swift.Result<MiniApp.MiniAppInfo, MiniApp.MASDKError>) -> Swift.Void)
+  @available(*, deprecated, message: "Use `MiniAppView` instead")
+  public func create(appId: Swift.String, version: Swift.String? = nil, queryParams: Swift.String? = nil, completionHandler: @escaping (Swift.Result<any MiniApp.MiniAppDisplayDelegate, MiniApp.MASDKError>) -> Swift.Void, messageInterface: any MiniApp.MiniAppMessageDelegate, adsDisplayer: MiniApp.MiniAppAdDisplayer? = nil, fromCache: Swift.Bool? = false)
+  public func setCustomPermissions(forMiniApp appId: Swift.String, permissionList: [MiniApp.MASDKCustomPermissionModel])
+  public func getCustomPermissions(forMiniApp appId: Swift.String) -> [MiniApp.MASDKCustomPermissionModel]
+  public func listDownloaded() -> [MiniApp.MiniAppInfo]
+  @available(*, deprecated, message: "This will not be available from next major version")
+  public func listDownloadedWithCustomPermissions() -> [(MiniApp.MiniAppInfo, [MiniApp.MASDKCustomPermissionModel])]
+  @available(*, deprecated, message: "Use `MiniAppView` instead")
+  public func create(appInfo: MiniApp.MiniAppInfo, queryParams: Swift.String? = nil, completionHandler: @escaping (Swift.Result<any MiniApp.MiniAppDisplayDelegate, MiniApp.MASDKError>) -> Swift.Void, messageInterface: any MiniApp.MiniAppMessageDelegate, adsDisplayer: MiniApp.MiniAppAdDisplayer? = nil, fromCache: Swift.Bool? = false)
+  public func getMiniAppManifest(miniAppId: Swift.String, miniAppVersion: Swift.String, languageCode: Swift.String? = nil, completionHandler: @escaping (Swift.Result<MiniApp.MiniAppManifest, MiniApp.MASDKError>) -> Swift.Void)
+  public func getDownloadedManifest(miniAppId: Swift.String) -> MiniApp.MiniAppManifest?
+  public func getMiniAppPreviewInfo(using token: Swift.String, completionHandler: @escaping (Swift.Result<MiniApp.PreviewMiniAppInfo, MiniApp.MASDKError>) -> Swift.Void)
+  public func keyboardShown(navigationBarHeight: CoreFoundation.CGFloat, screenHeight: CoreFoundation.CGFloat, keyboardheight: CoreFoundation.CGFloat)
+  public func keyboardHidden(navigationBarHeight: CoreFoundation.CGFloat, screenHeight: CoreFoundation.CGFloat = 0, keyboardheight: CoreFoundation.CGFloat = 0)
+  public func clearAllSecureStorage()
+  public func clearSecureStorage(for miniAppId: Swift.String)
+  public static func unzipMiniApp(fileName: Swift.String, miniAppId: Swift.String, versionId: Swift.String, completionHandler: ((Swift.Result<Swift.Bool, MiniApp.MASDKError>) -> Swift.Void)? = nil)
+  public func downloadMiniApp(appInfo: MiniApp.MiniAppInfo, completionHandler: @escaping (Swift.Result<any MiniApp.MiniAppDisplayDelegate, MiniApp.MASDKError>) -> Swift.Void)
+  public func downloadMiniApp(appId: Swift.String, versionId: Swift.String, completionHandler: @escaping (Swift.Result<Swift.Bool, MiniApp.MASDKError>) -> Swift.Void)
+  public static func isMiniAppCacheAvailable(appId: Swift.String, versionId: Swift.String) -> Swift.Bool
+  @objc deinit
+}
+extension MiniApp.MiniApp {
+  @available(*, deprecated, message: "Use `MiniAppView` instead")
+  public func create(url: Foundation.URL, queryParams: Swift.String? = nil, errorHandler: @escaping (MiniApp.MASDKError) -> Swift.Void, messageInterface: any MiniApp.MiniAppMessageDelegate, adsDisplayer: MiniApp.MiniAppAdDisplayer? = nil) -> any MiniApp.MiniAppDisplayDelegate
+}
+@objc @_inheritsConvenienceInitializers public class MiniAppAnalyticsLoader : ObjectiveC.NSObject {
+  @objc public static func loadMiniAppAnalytics()
+  @objc override dynamic public init()
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers public class MiniAppAnalytics {
+  public static let notificationName: Foundation.Notification.Name
+  open class var sdkVersion: Swift.String? {
+    get
+  }
+  @objc deinit
+}
+public struct MiniAppSSLConfig {
+}
+public struct MiniAppConfigSSLKeyHash {
+  public var pin: Swift.String
+  public var backupPin: Swift.String?
+  public init(pin: Swift.String, backup: Swift.String? = nil)
+}
+public class MiniAppSdkConfig {
+  public var isPreviewMode: Swift.Bool?
+  public var requireMiniAppSignatureVerification: Swift.Bool?
+  public var storageMaxSizeInBytes: Swift.UInt64?
+  public var baseUrl: Swift.String? {
+    get
+    set
+  }
+  public var host: Swift.String? {
+    get
+  }
+  public var sslKeyHash: MiniApp.MiniAppConfigSSLKeyHash? {
+    get
+    set
+  }
+  public var rasProjectId: Swift.String? {
+    get
+    set
+  }
+  public var subscriptionKey: Swift.String? {
+    get
+    set
+  }
+  public var hostAppVersion: Swift.String? {
+    get
+    set
+  }
+  public var analyticsConfigList: [MiniApp.MAAnalyticsConfig]? {
+    get
+    set
+  }
+  public init(baseUrl: Swift.String? = nil, rasProjectId: Swift.String? = nil, subscriptionKey: Swift.String? = nil, hostAppVersion: Swift.String? = nil, isPreviewMode: Swift.Bool? = nil, analyticsConfigList: [MiniApp.MAAnalyticsConfig]? = [], requireMiniAppSignatureVerification: Swift.Bool? = nil, sslKeyHash: MiniApp.MiniAppConfigSSLKeyHash? = nil, storageMaxSizeInBytes: Swift.UInt64? = nil)
+  @objc deinit
+}
+public struct MAAnalyticsConfig : Swift.Codable, Swift.Equatable {
+  public let acc: Swift.String
+  public let aid: Swift.String
+  public init(acc: Swift.String, aid: Swift.String)
+  public static func == (a: MiniApp.MAAnalyticsConfig, b: MiniApp.MAAnalyticsConfig) -> Swift.Bool
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public enum MAAnalyticsEventType : Swift.String, Swift.Codable {
+  case appear
+  case click
+  case error
+  case custom
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MAAnalyticsActionType : Swift.String, Swift.Codable {
+  case open
+  case close
+  case add
+  case delete
+  case change
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public class MAAnalyticsInfo : Swift.Codable {
+  final public let eventType: MiniApp.MAAnalyticsEventType
+  final public let actionType: MiniApp.MAAnalyticsActionType
+  final public let pageName: Swift.String
+  final public let componentName: Swift.String
+  final public let elementType: Swift.String
+  final public let data: Swift.String
+  public init(eventType: MiniApp.MAAnalyticsEventType, actionType: MiniApp.MAAnalyticsActionType, pageName: Swift.String, componentName: Swift.String, elementType: Swift.String, data: Swift.String)
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+  required public init(from decoder: any Swift.Decoder) throws
+}
+public class MAPoints : Swift.Codable {
+  public init(standard: Swift.Int, term: Swift.Int, cash: Swift.Int)
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+  required public init(from decoder: any Swift.Decoder) throws
+}
+public class MATokenInfo : Swift.Codable {
+  public init(accessToken: Swift.String, expirationDate: Foundation.Date, scopes: MiniApp.MASDKAccessTokenScopes?)
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+  required public init(from decoder: any Swift.Decoder) throws
+}
+public struct MiniAppInfo : Swift.Codable, Swift.Hashable, Swift.Equatable, Swift.Identifiable {
+  public var uuid: Swift.String
+  public static func == (lhs: MiniApp.MiniAppInfo, rhs: MiniApp.MiniAppInfo) -> Swift.Bool
+  public var id: Swift.String
+  public var displayName: Swift.String?
+  public var icon: Foundation.URL
+  public var version: MiniApp.Version
+  public var promotionalImageUrl: Swift.String?
+  public var promotionalText: Swift.String?
+  public var appConfig: MiniApp.MiniAppInfo.AppConfig?
+  public init(id: Swift.String, displayName: Swift.String? = nil, icon: Foundation.URL, version: MiniApp.Version, promotionalImageUrl: Swift.String? = nil, promotionalText: Swift.String? = nil, appConfig: MiniApp.MiniAppInfo.AppConfig? = nil)
+  public typealias ID = Swift.String
+  public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension MiniApp.MiniAppInfo {
+  public struct AppConfig : Swift.Codable, Swift.Hashable {
+    public static func == (lhs: MiniApp.MiniAppInfo.AppConfig, rhs: MiniApp.MiniAppInfo.AppConfig) -> Swift.Bool
+    public var headerHide: Swift.Int?
+    public var headerTitle: Swift.String
+    public var headerBackground: Swift.String
+    public var headerForeground: Swift.String
+    public func encode(to encoder: any Swift.Encoder) throws
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+    public init(from decoder: any Swift.Decoder) throws
+  }
+}
+public struct Version : Swift.Codable, Swift.Hashable {
+  public var versionTag: Swift.String
+  public var versionId: Swift.String
+  public init(versionTag: Swift.String, versionId: Swift.String)
+  public static func == (a: MiniApp.Version, b: MiniApp.Version) -> Swift.Bool
+  public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct UniversalBridgeInfoParameters : Swift.Codable {
+  public var key: Swift.String?
+  public var value: Swift.String?
+  public var description: Swift.String?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct CloseAlertInfo : Swift.Codable {
+  public let shouldDisplay: Swift.Bool?
+  public let title: Swift.String?
+  public let description: Swift.String?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct OpenMiniAppInfo : Swift.Codable {
+  public let appId: Swift.String?
+  public let queryParams: [Swift.String : Swift.String]?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct IgnoreSafeArea : Swift.Codable {
+  public let top: Swift.Bool?
+  public let bottom: Swift.Bool?
+  public init(top: Swift.Bool?, bottom: Swift.Bool?)
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct NavigationBarProps : Swift.Codable {
+  public let hide: Swift.Bool?
+  public let title: Swift.String?
+  public let titleAlign: Swift.String?
+  public let leftButton: Swift.String?
+  public init(hide: Swift.Bool?, title: Swift.String?, titleAlign: Swift.String?, leftButton: Swift.String?)
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct AppViewProps : Swift.Codable {
+  public let ignoreSafeArea: MiniApp.IgnoreSafeArea?
+  public let navigationBar: MiniApp.NavigationBarProps?
+  public init(ignoreSafeArea: MiniApp.IgnoreSafeArea?, navigationBar: MiniApp.NavigationBarProps?)
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public enum ChooseImageSource : Swift.String, Swift.Codable {
+  case camera
+  case photoLibrary
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum CameraType : Swift.String, Swift.Codable {
+  case front
+  case back
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct ChooseImageOptions : Swift.Codable, Swift.Equatable {
+  public let sourceType: MiniApp.ChooseImageSource?
+  public let cameraType: MiniApp.CameraType?
+  public let maxItems: Swift.Int?
+  public let maxWidth: Swift.Double?
+  public let maxHeight: Swift.Double?
+  public let aspectRatio: Swift.Double?
+  public let quality: Swift.Double?
+  public static func == (a: MiniApp.ChooseImageOptions, b: MiniApp.ChooseImageOptions) -> Swift.Bool
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct ImagePayload : Swift.Codable {
+  public let imageUrl: Swift.String
+  public let size: Swift.Int
+  public let width: Swift.Double
+  public let height: Swift.Double
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public enum BiometryType : Swift.String, Swift.Codable {
+  case none
+  case faceId
+  case touchId
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MiniAppJavaScriptError : Swift.String, Swift.Codable {
+  case internalError
+  case unexpectedMessageFormat
+  case invalidPermissionType
+  case valueIsEmpty
+  case scopeError
+  case audienceError
+  case failedToConformToProtocol
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MASDKPermissionError : Swift.String {
+  case denied
+  case notDetermined
+  case restricted
+  case failedToConformToProtocol
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MASDKCustomPermissionError : Swift.String {
+  case unknownError
+  case failedToConformToProtocol
+  case invalidCustomPermissionRequest
+  case invalidCustomPermissionsList
+  case userDenied
+  case outOfScope
+  case userInfoPermissionError
+  case locationPermissionError
+  public var name: Swift.String {
+    get
+  }
+  public var description: Swift.String {
+    get
+  }
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MASDKAccessTokenError : Swift.Error {
+  case failedToConformToProtocol
+  case audienceNotSupportedError
+  case scopesNotSupportedError
+  case authorizationFailureError(description: Swift.String)
+  case error(description: Swift.String)
+  public var description: Swift.String {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+}
+public enum MASDKPointError : Swift.Error {
+  case failedToConformToProtocol
+  case error(description: Swift.String)
+  public var description: Swift.String {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+}
+public enum MASDKDownloadFileError : Swift.Error {
+  case failedToConformToProtocol
+  case invalidUrl
+  case downloadFailed(code: Swift.Int?, reason: Swift.String)
+  case downloadHttpError(code: Swift.Int, reason: Swift.String)
+  case saveTemporarilyFailed
+  case error(description: Swift.String)
+  public var description: Swift.String {
+    get
+  }
+  public var code: Swift.Int? {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+}
+public enum UniversalBridgeError : Swift.Error {
+  case failedToConformToProtocol
+  case error(description: Swift.String)
+  public var name: Swift.String {
+    get
+  }
+  public var description: Swift.String {
+    get
+  }
+}
+public enum MAAnalyticsError : Swift.Error {
+  case failedToConformToProtocol
+  case error(description: Swift.String)
+  public var name: Swift.String {
+    get
+  }
+  public var description: Swift.String {
+    get
+  }
+}
+public struct MASDKAccessTokenScopes : Swift.Codable, Swift.Hashable, Swift.Comparable {
+  public var audience: Swift.String
+  public var scopes: [Swift.String]
+  public init?(audience: Swift.String?, scopes: [Swift.String]?)
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (lhs: MiniApp.MASDKAccessTokenScopes, rhs: MiniApp.MASDKAccessTokenScopes) -> Swift.Bool
+  public static func < (lhs: MiniApp.MASDKAccessTokenScopes, rhs: MiniApp.MASDKAccessTokenScopes) -> Swift.Bool
+  public func isPartOf(_ fullScopes: [MiniApp.MASDKAccessTokenScopes]) -> Swift.Bool
+  public func encode(to encoder: any Swift.Encoder) throws
+  public var hashValue: Swift.Int {
+    get
+  }
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct MiniAppManifest : Swift.Codable, Swift.Equatable {
+  public let requiredPermissions: [MiniApp.MASDKCustomPermissionModel]?
+  public let optionalPermissions: [MiniApp.MASDKCustomPermissionModel]?
+  public let customMetaData: [Swift.String : Swift.String?]?
+  public let accessTokenPermissions: [MiniApp.MASDKAccessTokenScopes]?
+  public let versionId: Swift.String?
+  public let languageCode: Swift.String?
+  public init(requiredPermissions: [MiniApp.MASDKCustomPermissionModel]?, optionalPermissions: [MiniApp.MASDKCustomPermissionModel]?, customMetaData: [Swift.String : Swift.String?]?, accessTokenPermissions: [MiniApp.MASDKAccessTokenScopes]?, versionId: Swift.String?, languageCode: Swift.String?)
+  public static func == (lhs: MiniApp.MiniAppManifest, rhs: MiniApp.MiniAppManifest) -> Swift.Bool
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct MiniAppReward : Swift.Codable {
+  public init(type: Swift.String, amount: Swift.Int)
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct PreviewMiniAppInfo : Swift.Codable {
+  public var miniapp: MiniApp.MiniAppInfo
+  public var host: MiniApp.Host?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct Host : Swift.Codable {
+  public var id: Swift.String?
+  public var subscriptionkey: Swift.String?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public protocol MAAnalyticsDelegate : AnyObject {
+  func didReceiveMAAnalytics(analyticsInfo: MiniApp.MAAnalyticsInfo, completionHandler: @escaping (Swift.Result<MiniApp.MASDKProtocolResponse, MiniApp.MAAnalyticsError>) -> Swift.Void)
+}
+public protocol MiniAppAdDisplayDelegate : AnyObject {
+  func loadInterstitial(for adId: Swift.String, onLoaded: @escaping (Swift.Result<Swift.Void, any Swift.Error>) -> Swift.Void)
+  func showInterstitial(for adId: Swift.String, onClosed: @escaping (Swift.Result<Swift.Void, any Swift.Error>) -> Swift.Void)
+  func loadRewarded(for adId: Swift.String, onLoaded: @escaping (Swift.Result<Swift.Void, any Swift.Error>) -> Swift.Void)
+  func showRewarded(for adId: Swift.String, onClosed: @escaping (Swift.Result<MiniApp.MiniAppReward, any Swift.Error>) -> Swift.Void)
+}
+public enum MASDKAdsDisplayError : Swift.String {
+  case unknownError
+  case failedToConformToProtocol
+  case sdkError
+  case adNotLoaded
+  case adIdError
+  case rewardFailure
+  case hostUIError
+  public var description: Swift.String {
+    get
+  }
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public protocol MiniAppDeviceDelegate : AnyObject {
+  func openMiniApp(info: MiniApp.OpenMiniAppInfo, completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  func openWebView(url: Swift.String, completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  func openUrl(url: Swift.String, completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  func openPhone(phoneNumber: Swift.String, completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  func scanQRCode(completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  func vibrate(completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  func keepScreen(keepScreenOn: Swift.Bool, completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  func checkBioAuthState(completionHandler: @escaping (Swift.Result<MiniApp.BiometryType, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  func openBioAuth(completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+}
+extension MiniApp.MiniAppDeviceDelegate {
+  public func openMiniApp(info: MiniApp.OpenMiniAppInfo, completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  public func openWebView(url: Swift.String, completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  public func openUrl(url: Swift.String, completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  public func openPhone(phoneNumber: Swift.String, completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  public func scanQRCode(completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  public func vibrate(completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  public func keepScreen(keepScreenOn: Swift.Bool, completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  public func checkBioAuthState(completionHandler: @escaping (Swift.Result<MiniApp.BiometryType, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  public func openBioAuth(completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+}
+public protocol MiniAppDisplayDelegate : AnyObject {
+  func getMiniAppView() -> UIKit.UIView
+  func sendJsonToMiniApp(string jsonString: Swift.String)
+}
+public protocol MiniAppMessageDelegate : MiniApp.MAAnalyticsDelegate, MiniApp.MiniAppDeviceDelegate, MiniApp.MiniAppShareContentDelegate, MiniApp.MiniAppUserInfoDelegate, MiniApp.UniversalBridgeDelegate, MiniApp.VoIPMessageBridgeDelegate {
+  func initMiniAppSession(completionHandler: @escaping (Swift.Result<Swift.String?, MiniApp.MASDKError>) -> Swift.Void)
+  func getDeviceId(completionHandler: @escaping (Swift.Result<Swift.String?, MiniApp.MASDKError>) -> Swift.Void)
+  func getMauid(completionHandler: @escaping (Swift.Result<Swift.String?, MiniApp.MASDKError>) -> Swift.Void)
+  func requestDevicePermission(permissionType: MiniApp.MiniAppDevicePermissionType, completionHandler: @escaping (Swift.Result<MiniApp.MASDKPermissionResponse, MiniApp.MASDKPermissionError>) -> Swift.Void)
+  func requestCustomPermissions(permissions: [MiniApp.MASDKCustomPermissionModel], miniAppTitle: Swift.String, completionHandler: @escaping (Swift.Result<[MiniApp.MASDKCustomPermissionModel], MiniApp.MASDKCustomPermissionError>) -> Swift.Void)
+  func needShowRequestMediaCapturePermission() -> Swift.Bool
+  var getEnvironmentInfo: (() -> MiniApp.MAHostEnvironmentInfo)? { get }
+  func downloadFile(fileName: Swift.String, url: Swift.String, headers: MiniApp.DownloadHeaders, completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MASDKDownloadFileError>) -> Swift.Void)
+  func configAppView(appViewProps: MiniApp.AppViewProps, completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  func closeMiniApp(withConfirmation: Swift.Bool, completionHandler: @escaping (Swift.Result<Swift.Bool, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  func chooseImage(options: MiniApp.ChooseImageOptions?, completionHandler: @escaping (Swift.Result<[UIKit.UIImage], MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  func getHostAppThemeColors(completionHandler: @escaping (Swift.Result<MiniApp.HostAppThemeColors?, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  func isDarkMode(completionHandler: @escaping (Swift.Result<Swift.Bool, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+}
+extension MiniApp.MiniAppMessageDelegate {
+  public func initMiniAppSession(completionHandler: @escaping (Swift.Result<Swift.String?, MiniApp.MASDKError>) -> Swift.Void)
+  public func requestCustomPermissions(permissions: [MiniApp.MASDKCustomPermissionModel], miniAppTitle: Swift.String, completionHandler: @escaping (Swift.Result<[MiniApp.MASDKCustomPermissionModel], MiniApp.MASDKCustomPermissionError>) -> Swift.Void)
+  public func needShowRequestMediaCapturePermission() -> Swift.Bool
+  public func requestDevicePermission(permissionType: MiniApp.MiniAppDevicePermissionType, completionHandler: @escaping (Swift.Result<MiniApp.MASDKPermissionResponse, MiniApp.MASDKPermissionError>) -> Swift.Void)
+  public func getDeviceId(completionHandler: @escaping (Swift.Result<Swift.String?, MiniApp.MASDKError>) -> Swift.Void)
+  public func getMauid(completionHandler: @escaping (Swift.Result<Swift.String?, MiniApp.MASDKError>) -> Swift.Void)
+  public var getEnvironmentInfo: (() -> MiniApp.MAHostEnvironmentInfo)? {
+    get
+  }
+  public func downloadFile(fileName: Swift.String, url: Swift.String, headers: MiniApp.DownloadHeaders, completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MASDKDownloadFileError>) -> Swift.Void)
+  public func sendJsonToHostApp(info: Swift.String, completionHandler: @escaping (Swift.Result<MiniApp.MASDKProtocolResponse, MiniApp.UniversalBridgeError>) -> Swift.Void)
+  public func configAppView(appViewProps: MiniApp.AppViewProps, completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  public func closeMiniApp(withConfirmation: Swift.Bool, completionHandler: @escaping (Swift.Result<Swift.Bool, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  public func chooseImage(options: MiniApp.ChooseImageOptions?, completionHandler: @escaping (Swift.Result<[UIKit.UIImage], MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  public func sendInfoToHostApp(info: MiniApp.UniversalBridgeInfoParameters, completionHandler: @escaping (Swift.Result<MiniApp.MASDKProtocolResponse, MiniApp.UniversalBridgeError>) -> Swift.Void)
+  public func getHostAppThemeColors(completionHandler: @escaping (Swift.Result<MiniApp.HostAppThemeColors?, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  public func isDarkMode(completionHandler: @escaping (Swift.Result<Swift.Bool, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  public func didReceiveMAAnalytics(analyticsInfo: MiniApp.MAAnalyticsInfo, completionHandler: @escaping (Swift.Result<MiniApp.MASDKProtocolResponse, MiniApp.MAAnalyticsError>) -> Swift.Void)
+  public func startVoIPCall(voIPProps: MiniApp.VoIPProps, completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MASDKError>) -> Swift.Void)
+  public func openUrl(url: Swift.String, completionHandler: @escaping (Swift.Result<Swift.String, MiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+}
+public enum MASDKProtocolResponse : Swift.String {
+  case success
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MASDKPermissionResponse : Swift.String {
+  case allowed
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public class MAHostEnvironmentInfo : Swift.Codable {
+  public init(platformVersion: Swift.String, hostVersion: Swift.String, sdkVersion: Swift.String, hostLocale: Swift.String)
+  convenience public init(hostLocale: Swift.String)
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+  required public init(from decoder: any Swift.Decoder) throws
+}
+public typealias DownloadHeaders = [Swift.String : Swift.String]
+public class HostAppThemeColors : Swift.Codable {
+  final public let primaryColor: Swift.String
+  final public let secondaryColor: Swift.String
+  public init(primaryColor: Swift.String, secondaryColor: Swift.String)
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+  required public init(from decoder: any Swift.Decoder) throws
+}
+public struct MiniAppShareContent {
+  public var messageContent: Swift.String
+  public var type: MiniApp.MiniAppShareContentType
+  public var url: Foundation.URL?
+  public var sourceURLs: [Foundation.URL]
+  public var fileNames: [Swift.String]
+  public var mimeTypes: [Swift.String]
+  public var shareItems: [Any]
+  public var temporaryFileURLs: [Foundation.URL]
+  public init(messageContent: Swift.String, type: MiniApp.MiniAppShareContentType = .text, url: Foundation.URL? = nil, sourceURLs: [Foundation.URL] = [], fileNames: [Swift.String] = [], mimeTypes: [Swift.String] = [], shareItems: [Any]? = nil, temporaryFileURLs: [Foundation.URL] = [])
+}
+public enum MiniAppShareContentType : Swift.String {
+  case text
+  case link
+  case image
+  case file
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public protocol MiniAppShareContentDelegate : AnyObject {
+  func shareContent(info: MiniApp.MiniAppShareContent, completionHandler: @escaping (Swift.Result<MiniApp.MASDKProtocolResponse, any Swift.Error>) -> Swift.Void)
+}
+extension MiniApp.MiniAppShareContentDelegate {
+  public func shareContent(info: MiniApp.MiniAppShareContent, completionHandler: @escaping (Swift.Result<MiniApp.MASDKProtocolResponse, any Swift.Error>) -> Swift.Void)
+}
+public protocol MiniAppUserInfoDelegate : AnyObject {
+  func isLoggedIn(completionHandler: @escaping (Swift.Result<Swift.Bool, MiniApp.MASDKError>) -> Swift.Void)
+  func triggerLoginUI(completionHandler: @escaping (Swift.Result<Swift.Bool, MiniApp.MASDKError>) -> Swift.Void)
+  func triggerRegisterUI(completionHandler: @escaping (Swift.Result<Swift.Bool, MiniApp.MASDKError>) -> Swift.Void)
+  func getUserInfo(completionHandler: @escaping (Swift.Result<MiniApp.MAUserInfo?, MiniApp.MASDKError>) -> Swift.Void)
+  func choosePhoneContact(completionHandler: @escaping (Swift.Result<MiniApp.MAContact?, MiniApp.MASDKError>) -> Swift.Void)
+}
+extension MiniApp.MiniAppUserInfoDelegate {
+  public func isLoggedIn(completionHandler: @escaping (Swift.Result<Swift.Bool, MiniApp.MASDKError>) -> Swift.Void)
+  public func triggerLoginUI(completionHandler: @escaping (Swift.Result<Swift.Bool, MiniApp.MASDKError>) -> Swift.Void)
+  public func triggerRegisterUI(completionHandler: @escaping (Swift.Result<Swift.Bool, MiniApp.MASDKError>) -> Swift.Void)
+  public func getUserInfo(completionHandler: @escaping (Swift.Result<MiniApp.MAUserInfo?, MiniApp.MASDKError>) -> Swift.Void)
+  public func choosePhoneContact(completionHandler: @escaping (Swift.Result<MiniApp.MAContact?, MiniApp.MASDKError>) -> Swift.Void)
+}
+public struct MAUserInfo : Swift.Codable {
+  public var phoneNumber: Swift.String
+  public var fullName: Swift.String
+  public var avatar: Swift.String
+  public init(phoneNumber: Swift.String, fullName: Swift.String, avatar: Swift.String)
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct MAContact : Swift.Codable, Swift.Equatable, Swift.Hashable, Swift.Identifiable {
+  public var id: Swift.String
+  public var name: Swift.String?
+  public var phoneNumber: Swift.String?
+  public init(id: Swift.String, name: Swift.String? = nil, phoneNumber: Swift.String? = nil)
+  public static func == (lhs: MiniApp.MAContact, rhs: MiniApp.MAContact) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public typealias ID = Swift.String
+  public func encode(to encoder: any Swift.Encoder) throws
+  public var hashValue: Swift.Int {
+    get
+  }
+  public init(from decoder: any Swift.Decoder) throws
+}
+public protocol UniversalBridgeDelegate : AnyObject {
+  func sendJsonToHostApp(info: Swift.String, completionHandler: @escaping (Swift.Result<MiniApp.MASDKProtocolResponse, MiniApp.UniversalBridgeError>) -> Swift.Void)
+  func sendInfoToHostApp(info: MiniApp.UniversalBridgeInfoParameters, completionHandler: @escaping (Swift.Result<MiniApp.MASDKProtocolResponse, MiniApp.UniversalBridgeError>) -> Swift.Void)
+}
+public typealias MASDKDownloadedListPermissionsPair = [(MiniApp.MiniAppInfo, [MiniApp.MASDKCustomPermissionModel])]
+public struct MiniAppSDKConstants {
+  public static let miniAppRootFolderName: Swift.String
+}
+public struct MASDKLocale {
+  public enum LocalizableKey : Swift.String {
+    case ok
+    case cancel
+    case allow
+    case dont_allow
+    case save
+    case firstLaunchFooter
+    case allowAccessCameraAndMicroTitle
+    case allowAccessCameraTitle
+    case allowAccessMicroTitle
+    case settingsUserProfileEdit
+    case settingsUserProfileSave
+    case settingsUserProfileAdd
+    case settingsUserProfileDelete
+    case serverError
+    case invalidUrl
+    case invalidAppId
+    case invalidVersionId
+    case invalidContactId
+    case invalidResponse
+    case downloadFailed
+    case saveTemporarilyFailed
+    case signatureFailed
+    case miniAppCorrupted
+    case miniAppTooManyRequestsError
+    case noPublishedVersion
+    case miniappIdNotFound
+    case metaDataRequiredPermissionsFailure
+    case unknownError
+    case hostAppError
+    case failedToConformToProtocol
+    case unknownServerError
+    case adNotLoadedError
+    case adLoadingError
+    case adLoadedError
+    case uiNavButtonClose
+    case uiFallbackTitle
+    case uiFallbackButtonRetry
+    public init?(rawValue: Swift.String)
+    public typealias RawValue = Swift.String
+    public var rawValue: Swift.String {
+      get
+    }
+  }
+  public static func localize(bundle path: Swift.String? = nil, _ key: Swift.String) -> Swift.String
+  public static func localize(bundle path: Swift.String? = nil, _ key: MiniApp.MASDKLocale.LocalizableKey) -> Swift.String
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor @preconcurrency public class MiniAppActivityController : UIKit.UIActivityViewController {
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public init(activityItems: [Any], applicationActivities: [UIKit.UIActivity]?)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func dismiss(animated flag: Swift.Bool, completion: (() -> Swift.Void)? = nil)
+  @objc deinit
+}
+public class MiniAppExternalUrlLoader {
+  weak public var currentWebViewController: UIKit.UIViewController?
+  public var currentResponseHandler: MiniApp.MiniAppNavigationResponseHandler?
+  public var customMiniAppURL: Foundation.URL?
+  public init(webViewController: UIKit.UIViewController? = nil, responseHandler: MiniApp.MiniAppNavigationResponseHandler? = nil, customMiniAppURL: Foundation.URL? = nil)
+  public func shouldOverrideURLLoading(_ url: Foundation.URL?) -> WebKit.WKNavigationActionPolicy
+  @objc deinit
+}
+public enum MiniAppViewParameters {
+  case `default`(MiniApp.MiniAppViewParameters.DefaultParams)
+  case url(MiniApp.MiniAppViewParameters.UrlParams)
+  case info(MiniApp.MiniAppViewParameters.InfoParams)
+  case urlDev(MiniApp.MiniAppViewParameters.UrlDevParams)
+}
+extension MiniApp.MiniAppViewParameters {
+  public struct DefaultParams {
+    public init(config: MiniApp.MiniAppConfig, type: MiniApp.MiniAppType, appId: Swift.String, version: Swift.String? = nil, languageCode: Swift.String? = nil, queryParams: Swift.String? = nil)
+  }
+  public struct UrlParams {
+    public init(config: MiniApp.MiniAppConfig, type: MiniApp.MiniAppType, url: Foundation.URL, languageCode: Swift.String? = nil, queryParams: Swift.String? = nil)
+  }
+  public struct InfoParams {
+    public init(config: MiniApp.MiniAppConfig, type: MiniApp.MiniAppType, info: MiniApp.MiniAppInfo, languageCode: Swift.String? = nil, queryParams: Swift.String? = nil)
+  }
+  public struct UrlDevParams {
+    public init(config: MiniApp.MiniAppConfig, type: MiniApp.MiniAppType, appId: Swift.String, version: Swift.String? = nil, url: Foundation.URL, languageCode: Swift.String? = nil, queryParams: Swift.String? = nil)
+  }
+}
+public enum MiniAppViewState {
+  case none
+  case loading
+  case active
+  case inactive
+  case error(any Swift.Error)
+}
+public enum MiniAppType {
+  case miniapp
+  case widget
+  public static func == (a: MiniApp.MiniAppType, b: MiniApp.MiniAppType) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct MiniAppConfig {
+  public init(config: MiniApp.MiniAppSdkConfig?, adsDisplayer: MiniApp.MiniAppAdDisplayer? = nil, messageDelegate: any MiniApp.MiniAppMessageDelegate, navigationDelegate: (any MiniApp.MiniAppNavigationDelegate)? = nil)
+}
+public protocol MiniAppProgressViewable : UIKit.UIView {
+  func updateViewState(state: MiniApp.MiniAppViewState)
+  func requestHide()
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class MiniAppView : UIKit.UIView, MiniApp.MiniAppViewable {
+  @_Concurrency.MainActor @preconcurrency final public let state: Combine.PassthroughSubject<MiniApp.MiniAppViewState, Swift.Never>
+  @_Concurrency.MainActor @preconcurrency public var progressStateView: (any MiniApp.MiniAppProgressViewable)? {
+    get
+    set
+  }
+  @_Concurrency.MainActor @preconcurrency public var enable3DTouch: Swift.Bool {
+    get
+    set
+  }
+  @_Concurrency.MainActor @preconcurrency public init(params: MiniApp.MiniAppViewParameters)
+  @objc deinit
+  @_Concurrency.MainActor @preconcurrency public func load(fromCache: Swift.Bool = false, completion: @escaping (Swift.Result<Swift.Bool, MiniApp.MASDKError>) -> Swift.Void)
+  @_Concurrency.MainActor @preconcurrency public func loadAsync(fromCache: Swift.Bool = false) async throws -> MiniApp.MiniAppView.MiniAppLoadStatus
+  @_Concurrency.MainActor @preconcurrency public func loadFromBundle(miniAppManifest: MiniApp.MiniAppManifest?, completion: @escaping (Swift.Result<Swift.Bool, MiniApp.MASDKError>) -> Swift.Void)
+  @_Concurrency.MainActor @preconcurrency public func reload(queryParams: Swift.String? = nil)
+  @_Concurrency.MainActor @preconcurrency public func requestDownloadNewVersion(info: MiniApp.MiniAppInfo, completionHandler: @escaping (Swift.Result<Swift.Bool, MiniApp.MASDKError>) -> Swift.Void)
+  @_Concurrency.MainActor @preconcurrency public var alertInfo: MiniApp.CloseAlertInfo? {
+    get
+  }
+  @_Concurrency.MainActor @preconcurrency public var miniAppTitle: Swift.String {
+    get
+  }
+  public enum MiniAppLoadStatus {
+    case success
+    public static func == (a: MiniApp.MiniAppView.MiniAppLoadStatus, b: MiniApp.MiniAppView.MiniAppLoadStatus) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+extension MiniApp.MiniAppView : MiniApp.MiniAppNavigationBarDelegate {
+  @_Concurrency.MainActor @preconcurrency public func miniAppNavigationBar(didTriggerAction action: MiniApp.MiniAppNavigationAction) -> Swift.Bool
+  @_Concurrency.MainActor @preconcurrency public func miniAppShouldClose() -> MiniApp.CloseAlertInfo?
+}
+extension MiniApp.MiniAppView {
+  @_Concurrency.MainActor @preconcurrency public func sendJsonToMiniApp(string jsonString: Swift.String)
+  @_Concurrency.MainActor @preconcurrency public func screenDimensionChange(screenSize: CoreFoundation.CGSize, safeAreaInsets: UIKit.UIEdgeInsets)
+  @_Concurrency.MainActor @preconcurrency public func requestGoBack()
+}
+extension MiniApp.MiniAppView : UIKit.UIScrollViewDelegate {
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func scrollViewDidScroll(_ scrollView: UIKit.UIScrollView)
+}
+public protocol MiniAppViewable : UIKit.UIView, MiniApp.MiniAppNavigationBarDelegate {
+  var state: Combine.PassthroughSubject<MiniApp.MiniAppViewState, Swift.Never> { get }
+  var progressStateView: (any MiniApp.MiniAppProgressViewable)? { get set }
+  func load(fromCache: Swift.Bool, completion: @escaping (Swift.Result<Swift.Bool, MiniApp.MASDKError>) -> Swift.Void)
+  @discardableResult
+  func loadAsync(fromCache: Swift.Bool) async throws -> MiniApp.MiniAppView.MiniAppLoadStatus
+  var alertInfo: MiniApp.CloseAlertInfo? { get }
+  var enable3DTouch: Swift.Bool { get }
+  func loadFromBundle(miniAppManifest: MiniApp.MiniAppManifest?, completion: @escaping (Swift.Result<Swift.Bool, MiniApp.MASDKError>) -> Swift.Void)
+}
+extension MiniApp.MiniAppViewable {
+  public func load(fromCache: Swift.Bool = false, completion: @escaping (Swift.Result<Swift.Bool, MiniApp.MASDKError>) -> Swift.Void)
+  @discardableResult
+  public func loadAsync(fromCache: Swift.Bool = false) async throws -> MiniApp.MiniAppView.MiniAppLoadStatus
+  public func loadFromBundle(miniAppManifest: MiniApp.MiniAppManifest? = nil, completion: @escaping (Swift.Result<Swift.Bool, MiniApp.MASDKError>) -> Swift.Void)
+}
+extension UIKit.UIImageView {
+  @_Concurrency.MainActor @preconcurrency public func loadFromUrl(_ url: Foundation.URL)
+}
+@_Concurrency.MainActor @preconcurrency public struct MiniAppSUIView : SwiftUI.UIViewRepresentable {
+  @_Concurrency.MainActor @preconcurrency public init(params: MiniApp.MiniAppViewParameters.DefaultParams, fromCache: Swift.Bool = false, handler: MiniApp.MiniAppSUIViewHandler, fromBundle: Swift.Bool = false, miniAppManifest: MiniApp.MiniAppManifest? = nil, onLoadFinish: (() -> Swift.Void)? = nil)
+  @_Concurrency.MainActor @preconcurrency public init(urlParams: MiniApp.MiniAppViewParameters.UrlParams, handler: MiniApp.MiniAppSUIViewHandler, onLoadFinish: (() -> Swift.Void)? = nil)
+  @_Concurrency.MainActor @preconcurrency public init(infoParams: MiniApp.MiniAppViewParameters.InfoParams, fromCache: Swift.Bool = false, handler: MiniApp.MiniAppSUIViewHandler, onLoadFinish: (() -> Swift.Void)? = nil)
+  @_Concurrency.MainActor @preconcurrency public init(urlDevParams: MiniApp.MiniAppViewParameters.UrlDevParams, handler: MiniApp.MiniAppSUIViewHandler, onLoadFinish: (() -> Swift.Void)? = nil)
+  @_Concurrency.MainActor @preconcurrency public func makeUIView(context: MiniApp.MiniAppSUIView.Context) -> MiniApp.MiniAppView
+  @_Concurrency.MainActor @preconcurrency public func updateUIView(_ uiView: MiniApp.MiniAppView, context: MiniApp.MiniAppSUIView.Context)
+  @_Concurrency.MainActor @preconcurrency public static func dismantleUIView(_ uiView: MiniApp.MiniAppView, coordinator: MiniApp.MiniAppSUIView.Coordinator)
+  @_Concurrency.MainActor @preconcurrency public func makeCoordinator() -> MiniApp.MiniAppSUIView.Coordinator
+  public typealias Body = Swift.Never
+  public typealias UIViewType = MiniApp.MiniAppView
+}
+extension MiniApp.MiniAppSUIView {
+  @objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class Coordinator : ObjectiveC.NSObject, Combine.ObservableObject {
+    public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
+    @objc deinit
+  }
+}
+public class MiniAppSUIViewHandler : Combine.ObservableObject {
+  final public let uuid: Swift.String
+  @Combine.Published<MiniApp.MiniAppSUIViewAction?> @_projectedValueProperty($action) public var action: MiniApp.MiniAppSUIViewAction? {
+    get
+    @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+    set
+    @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+    _modify
+  }
+  public var $action: Combine.Published<MiniApp.MiniAppSUIViewAction?>.Publisher {
+    get
+    @available(iOS 14.0, tvOS 14.0, watchOS 7.0, macOS 11.0, *)
+    set
+  }
+  @Combine.Published<Swift.Bool> @_projectedValueProperty($isActive) public var isActive: Swift.Bool {
+    get
+    @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+    set
+    @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+    _modify
+  }
+  public var $isActive: Combine.Published<Swift.Bool>.Publisher {
+    get
+    @available(iOS 14.0, tvOS 14.0, watchOS 7.0, macOS 11.0, *)
+    set
+  }
+  public var reload: ((Swift.String?) -> Swift.Void)?
+  public var requestDownloadNewVersion: ((MiniApp.MiniAppInfo, @escaping (Swift.Result<Swift.Bool, MiniApp.MASDKError>) -> Swift.Void) -> Swift.Void)?
+  public var closeAlertInfo: (() -> MiniApp.CloseAlertInfo?)?
+  public var miniAppTitle: (() -> Swift.String)?
+  public var miniAppIdentifier: (() -> Swift.String)?
+  public var sendJsonToMiniApp: ((Swift.String) -> Swift.Void)?
+  public var screenDimensionChange: ((CoreFoundation.CGSize, UIKit.UIEdgeInsets) -> Swift.Void)?
+  public init(uuid: Swift.String = UUID().uuidString)
+  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
+  @objc deinit
+}
+public enum MiniAppSUIViewAction {
+  case goBack
+  case goForward
+  public static func == (a: MiniApp.MiniAppSUIViewAction, b: MiniApp.MiniAppSUIViewAction) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class MiniAppSharePreviewViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewDidAppear(_ animated: Swift.Bool)
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor @preconcurrency public class MiniAppCustomNavigationController : UIKit.UINavigationController {
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic open func dismiss(animated flag: Swift.Bool, completion: (() -> Swift.Void)? = nil)
+  @available(iOS 5.0, *)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public init(navigationBarClass: Swift.AnyClass?, toolbarClass: Swift.AnyClass?)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public init(rootViewController: UIKit.UIViewController)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor @preconcurrency @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @objc deinit
+}
+public struct MiniAppUIParams {
+  public init(title: Swift.String = "", miniAppId: Swift.String, miniAppVersion: Swift.String?, config: MiniApp.MiniAppSdkConfig? = nil, messageInterface: any MiniApp.MiniAppMessageDelegate, navigationInterface: (any MiniApp.MiniAppNavigationDelegate)? = nil, queryParams: Swift.String? = nil, adsDisplayer: MiniApp.MiniAppAdDisplayer? = nil, enableSharePreview: Swift.Bool = false, loadFromCacheIfFailed: Swift.Bool = false)
+}
+@_hasMissingDesignatedInitializers public class MiniAppUI {
+  public class func shared() -> MiniApp.MiniAppUI
+  public func create(params: MiniApp.MiniAppUIParams) -> MiniApp.MiniAppViewController
+  public func launch(base: UIKit.UIViewController, params: MiniApp.MiniAppUIParams, delegate: any MiniApp.MiniAppUIDelegate)
+  @objc deinit
+}
+public protocol MiniAppFallbackViewable : UIKit.UIView {
+  var onRetry: (() -> Swift.Void)? { get set }
+}
+public protocol MiniAppUIDelegate : AnyObject {
+  func miniApp(_ viewController: MiniApp.MiniAppViewController, didLaunchWith config: MiniApp.MiniAppSdkConfig?)
+  func miniApp(_ viewController: MiniApp.MiniAppViewController, shouldExecute action: MiniApp.MiniAppNavigationAction)
+  func miniApp(_ viewController: MiniApp.MiniAppViewController, didLoadWith error: MiniApp.MASDKError?)
+  func onClose()
+}
+extension MiniApp.MiniAppUIDelegate {
+  public func miniApp(_ viewController: MiniApp.MiniAppViewController, didLaunchWith config: MiniApp.MiniAppSdkConfig?)
+  public func miniApp(_ viewController: MiniApp.MiniAppViewController, shouldExecute action: MiniApp.MiniAppNavigationAction)
+  public func miniApp(_ viewController: MiniApp.MiniAppViewController, didLoadWith error: MiniApp.MASDKError?)
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class MiniAppViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor @preconcurrency public var fallbackView: any MiniApp.MiniAppFallbackViewable {
+    get
+    set
+  }
+  @objc deinit
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewDidAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewWillDisappear(_ animated: Swift.Bool)
+  @objc @_Concurrency.MainActor @preconcurrency public func backPressed()
+  @objc @_Concurrency.MainActor @preconcurrency public func forwardPressed()
+  @objc @_Concurrency.MainActor @preconcurrency public func closePressed()
+  @_Concurrency.MainActor @preconcurrency public func refreshNavigationBarButtons(backButtonEnabled: Swift.Bool, forwardButtonEnabled: Swift.Bool)
+  @objc @_Concurrency.MainActor @preconcurrency public func sharePressed()
+  @_Concurrency.MainActor @preconcurrency public func closeMiniApp(withConfirmation confirmation: Swift.Bool)
+}
+extension MiniApp.MiniAppViewController : MiniApp.MiniAppNavigationDelegate {
+  @_Concurrency.MainActor @preconcurrency public func miniAppNavigation(shouldOpen url: Foundation.URL, with responseHandler: @escaping MiniApp.MiniAppNavigationResponseHandler)
+}
+extension MiniApp.MiniAppNavigationAction : Swift.Equatable {}
+extension MiniApp.MiniAppNavigationAction : Swift.Hashable {}
+extension MiniApp.MiniAppNavigationVisibility : Swift.Equatable {}
+extension MiniApp.MiniAppNavigationVisibility : Swift.Hashable {}
+extension MiniApp.MiniAppDevicePermissionType : Swift.Equatable {}
+extension MiniApp.MiniAppDevicePermissionType : Swift.Hashable {}
+extension MiniApp.MiniAppDevicePermissionType : Swift.RawRepresentable {}
+extension MiniApp.MiniAppCustomPermissionType : Swift.Equatable {}
+extension MiniApp.MiniAppCustomPermissionType : Swift.Hashable {}
+extension MiniApp.MiniAppCustomPermissionType : Swift.RawRepresentable {}
+extension MiniApp.MiniAppCustomPermissionGrantedStatus : Swift.Equatable {}
+extension MiniApp.MiniAppCustomPermissionGrantedStatus : Swift.Hashable {}
+extension MiniApp.MiniAppCustomPermissionGrantedStatus : Swift.RawRepresentable {}
+extension MiniApp.MiniAppEvent : Swift.Equatable {}
+extension MiniApp.MiniAppEvent : Swift.Hashable {}
+extension MiniApp.MiniAppEvent : Swift.RawRepresentable {}
+extension MiniApp.MiniAppKeyboardEvent : Swift.Equatable {}
+extension MiniApp.MiniAppKeyboardEvent : Swift.Hashable {}
+extension MiniApp.MiniAppKeyboardEvent : Swift.RawRepresentable {}
+extension MiniApp.MAAnalyticsEventType : Swift.Equatable {}
+extension MiniApp.MAAnalyticsEventType : Swift.Hashable {}
+extension MiniApp.MAAnalyticsEventType : Swift.RawRepresentable {}
+extension MiniApp.MAAnalyticsActionType : Swift.Equatable {}
+extension MiniApp.MAAnalyticsActionType : Swift.Hashable {}
+extension MiniApp.MAAnalyticsActionType : Swift.RawRepresentable {}
+extension MiniApp.ChooseImageSource : Swift.Equatable {}
+extension MiniApp.ChooseImageSource : Swift.Hashable {}
+extension MiniApp.ChooseImageSource : Swift.RawRepresentable {}
+extension MiniApp.CameraType : Swift.Equatable {}
+extension MiniApp.CameraType : Swift.Hashable {}
+extension MiniApp.CameraType : Swift.RawRepresentable {}
+extension MiniApp.BiometryType : Swift.Equatable {}
+extension MiniApp.BiometryType : Swift.Hashable {}
+extension MiniApp.BiometryType : Swift.RawRepresentable {}
+extension MiniApp.MiniAppJavaScriptError : Swift.Error {}
+extension MiniApp.MiniAppJavaScriptError : Swift.Equatable {}
+extension MiniApp.MiniAppJavaScriptError : Swift.Hashable {}
+extension MiniApp.MiniAppJavaScriptError : Swift.RawRepresentable {}
+extension MiniApp.MASDKPermissionError : Swift.Error {}
+extension MiniApp.MASDKPermissionError : Swift.Equatable {}
+extension MiniApp.MASDKPermissionError : Swift.Hashable {}
+extension MiniApp.MASDKPermissionError : Swift.RawRepresentable {}
+extension MiniApp.MASDKCustomPermissionError : Swift.Error {}
+extension MiniApp.MASDKCustomPermissionError : Swift.Equatable {}
+extension MiniApp.MASDKCustomPermissionError : Swift.Hashable {}
+extension MiniApp.MASDKCustomPermissionError : Swift.RawRepresentable {}
+extension MiniApp.MASDKAdsDisplayError : Swift.Error {}
+extension MiniApp.MASDKAdsDisplayError : Swift.Equatable {}
+extension MiniApp.MASDKAdsDisplayError : Swift.Hashable {}
+extension MiniApp.MASDKAdsDisplayError : Swift.RawRepresentable {}
+extension MiniApp.MASDKProtocolResponse : Swift.Equatable {}
+extension MiniApp.MASDKProtocolResponse : Swift.Hashable {}
+extension MiniApp.MASDKProtocolResponse : Swift.RawRepresentable {}
+extension MiniApp.MASDKPermissionResponse : Swift.Equatable {}
+extension MiniApp.MASDKPermissionResponse : Swift.Hashable {}
+extension MiniApp.MASDKPermissionResponse : Swift.RawRepresentable {}
+extension MiniApp.MiniAppShareContentType : Swift.Equatable {}
+extension MiniApp.MiniAppShareContentType : Swift.Hashable {}
+extension MiniApp.MiniAppShareContentType : Swift.RawRepresentable {}
+extension MiniApp.MASDKLocale.LocalizableKey : Swift.Equatable {}
+extension MiniApp.MASDKLocale.LocalizableKey : Swift.Hashable {}
+extension MiniApp.MASDKLocale.LocalizableKey : Swift.RawRepresentable {}
+extension MiniApp.MiniAppType : Swift.Equatable {}
+extension MiniApp.MiniAppType : Swift.Hashable {}
+extension MiniApp.MiniAppView.MiniAppLoadStatus : Swift.Equatable {}
+extension MiniApp.MiniAppView.MiniAppLoadStatus : Swift.Hashable {}
+extension MiniApp.MiniAppSUIView : Swift.Sendable {}
+extension MiniApp.MiniAppSUIView.Coordinator : Swift.Sendable {}
+extension MiniApp.MiniAppSUIViewAction : Swift.Equatable {}
+extension MiniApp.MiniAppSUIViewAction : Swift.Hashable {}
